@@ -16,6 +16,7 @@ class MealModel {
   });
 
   //copywith method
+  
   MealModel copyWith({
     String? img,
     String? name,
