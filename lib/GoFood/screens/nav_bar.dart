@@ -27,7 +27,7 @@ class _NavBarState extends State<NavBar> {
   Widget build(BuildContext context) {
     // 3. الحل: تعريف قائمة الشاشات داخل الـ build لتتمكن من الوصول لـ cart
     final List<Widget> screens = [
-      HomePage(cart: cart),
+      HomeScreen(cart: cart),
       const FavPage(),
       CartPage(cart: cart),
     ];

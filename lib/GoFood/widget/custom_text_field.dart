@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
+  final TextEditingController controller; 
   final TextInputType keyType;
   final String hint;
   final String lbl;
@@ -13,6 +14,7 @@ class CustomTextField extends StatelessWidget {
 
   const CustomTextField({
     super.key,
+    required this.controller, 
     this.suffixIcon,
     required this.keyType,
     required this.hint,
@@ -29,16 +31,15 @@ class CustomTextField extends StatelessWidget {
     return TextFormField(
       validator: validator,
       obscureText: obscure,
-      // controller: emailController,
+      controller: controller,
       keyboardType: keyType,
       decoration: InputDecoration(
-        border: OutlineInputBorder(),
-        hint: Text(hint),
+        border: const OutlineInputBorder(),
+        hintText: hint, 
         labelText: lbl,
-        contentPadding: EdgeInsets.all(20),
+        contentPadding: const EdgeInsets.all(20),
         counterText: counter,
         helperText: helper,
-        enabledBorder: OutlineInputBorder(),
         prefixIcon: Icon(preIcon),
         suffixIcon: suffixIcon,
       ),

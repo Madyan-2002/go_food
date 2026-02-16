@@ -4,18 +4,18 @@ import 'package:go_food/GoFood/screens/details_screen.dart';
 import 'package:go_food/GoFood/widget/category_widget.dart';
 import 'package:go_food/GoFood/widget/item_card.dart';
 
-class HomePage extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   final List<MealModel> cart;
-  HomePage({super.key, required this.cart});
+  HomeScreen({super.key, required this.cart});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 String selctedItem = 'All';
 String searchText = '';
 
-class _HomePageState extends State<HomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
