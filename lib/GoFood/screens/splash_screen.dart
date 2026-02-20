@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:go_food/GoFood/screens/intro_screen.dart';
+import 'package:go_food/GoFood/screens/register_login_screen.dart';
+import 'package:go_food/GoFood/styles/color_class.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (c) => IntroPages()),
+        MaterialPageRoute(builder: (c) => RegisterLogin()),
       );
     });
   }
@@ -56,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ),
                 ),
                 SizedBox(height: 10),
-                CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                CircularProgressIndicator(color: ColorClass.headLines, strokeWidth: 3),
               ],
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_food/GoFood/model/meal_model.dart';
 import 'package:go_food/GoFood/screens/details_screen.dart';
+import 'package:go_food/GoFood/styles/color_class.dart';
 import 'package:go_food/GoFood/widget/category_widget.dart';
 import 'package:go_food/GoFood/widget/item_card.dart';
 
@@ -76,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: width * 0.14,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: Color(0xCDfd4754),
+                  color: ColorClass.primary,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -109,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
                 colorBg: selctedItem == categories[index]
-                    ? Color(0xCDfd4754)
-                    : Colors.white,
+                    ? ColorClass.primary
+                    : ColorClass.headLines,
                 text: categories[index],
               ),
             ),

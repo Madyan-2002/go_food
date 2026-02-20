@@ -2,20 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:go_food/GoFood/model/meal_model.dart';
 import 'package:go_food/GoFood/widget/fav_card.dart';
 
-class FavPage extends StatefulWidget {
-  const FavPage({super.key});
+class FavScreen extends StatefulWidget {
+  
+  
+  const FavScreen({super.key});
 
   @override
-  State<FavPage> createState() => _FavPageState();
+  State<FavScreen> createState() => _FavPageState();
 }
 
-class _FavPageState extends State<FavPage> {
+class _FavPageState extends State<FavScreen> {
   @override
   Widget build(BuildContext context) {
     List<MealModel> favMeals = meals
         .where((meal) => meal.isFav == true)
         .toList();
-    return ListView.builder(
+    return favMeals.isEmpty
+        ? SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .center,
+              children: [
+                Icon(
+                  Icons.favorite_outline_sharp,
+                  size: 70,
+                  color: Colors.grey,
+                ),
+                SizedBox(height: 30),
+                Text(
+                  'Fav is Empty',
+                  style: TextStyle(
+                    fontFamily: 'font2',
+                    fontSize: 22,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          )
+        :ListView.builder(
       itemCount: favMeals.length,
       itemBuilder: (context, index) {
         return FavCard(

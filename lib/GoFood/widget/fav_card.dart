@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_food/GoFood/model/meal_model.dart';
+import 'package:go_food/GoFood/styles/color_class.dart';
 
 class FavCard extends StatelessWidget {
   final MealModel mealModel;
@@ -34,7 +35,7 @@ class FavCard extends StatelessWidget {
                   onTap: onTap,
                   child: Icon(
                     Icons.favorite,
-                    color: Colors.red,
+                    color: ColorClass.primary,
                     size: constraints.maxWidth * 0.10,
                   ),
                 ),

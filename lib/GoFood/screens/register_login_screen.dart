@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_food/GoFood/screens/nav_bar.dart';
+import 'package:go_food/GoFood/screens/profile_screen.dart';
 import 'package:go_food/GoFood/widget/custom_text_field.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterLogin extends StatefulWidget {
   const RegisterLogin({super.key});
@@ -15,10 +17,13 @@ class _RegisterLoginState extends State<RegisterLogin> {
   // Moved inside state to keep things encapsulated
   bool passOff = true;
   bool isLogin = true;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -28,6 +33,19 @@ class _RegisterLoginState extends State<RegisterLogin> {
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  // هذه الخطوة التي تنشأ لنا ال database
+  Future<void> addUser() {
+    CollectionReference users = firestore.collection(
+      'users',
+    ); // هنا يكون ال collection
+    return users.doc(firebaseAuth.currentUser!.uid).set({
+      // هنا يكون ال document
+      // وهنا ننشأ ال field
+      'email': emailController.text,
+      'role': 'user',
+    });
   }
 
   @override
@@ -117,7 +135,10 @@ class _RegisterLoginState extends State<RegisterLogin> {
                         Expanded(child: Divider()),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10),
-                          child: Text("OR", style: TextStyle(color: Colors.grey)),
+                          child: Text(
+                            "OR",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ),
                         Expanded(child: Divider()),
                       ],
@@ -125,8 +146,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
                     const SizedBox(height: 20),
                     OutlinedButton(
                       onPressed: () {
-                         
-                          signInWithGoogle(); 
+                        signInWithGoogle();
                       },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.all(12),
@@ -145,16 +165,16 @@ class _RegisterLoginState extends State<RegisterLogin> {
                           const SizedBox(width: 12),
                           const Text(
                             'Sign in with Google',
-                            style: TextStyle(color: Colors.black87, fontSize: 16),
+                            style: TextStyle(
+                              color: Colors.black87,
+                              fontSize: 16,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ],
-
-                  
                   const SizedBox(height: 20),
-
                   // --- Switch Between Login/Register ---
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -200,10 +220,31 @@ class _RegisterLoginState extends State<RegisterLogin> {
         );
       }
 
-      if (result == 'done') {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const NavBar()),
+      if (result == 'done login' || result == 'done') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isLogin ? "Welcome Back!" : "Account Created Successfully!",
+            ),
+          ),
         );
+
+        final doc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(firebaseAuth.currentUser!.uid)
+            .get();
+
+        if (doc['role'] == 'user') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const NavBar()),
+          );
+        }
+
+        else if (doc['role'] == 'admin'){
+           Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          );
+        }
       } else {
         ScaffoldMessenger.of(
           context,
@@ -225,7 +266,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
         email: emailAddress,
         password: password,
       );
-      await FirebaseAuth.instance.signOut();
+      await addUser(); // ونضيف هنا ال function
       return 'done';
     } on FirebaseAuthException catch (e) {
       return e.message ?? 'An error occurred';
@@ -243,26 +284,32 @@ class _RegisterLoginState extends State<RegisterLogin> {
         email: email,
         password: password,
       );
-      return 'done';
+      return 'done login';
     } on FirebaseAuthException catch (e) {
-      return e.message ?? 'An error occurred';
+      if (e.code == 'user-not-found') {
+        return ('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        return ('Wrong password provided for that user.');
+      }
+      return e.message ?? e.code;
     }
   }
 
   Future<UserCredential> signInWithGoogle() async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
-  // Create a new credential
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
 
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
-}
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 }

@@ -1,17 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_food/GoFood/screens/admin_screen.dart';
 import 'package:go_food/GoFood/screens/nav_bar.dart';
-import 'package:go_food/GoFood/screens/register_login_screen.dart';
+import 'package:go_food/GoFood/screens/splash_screen.dart';
+import 'package:go_food/GoFood/styles/color_class.dart';
 import 'package:go_food/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
-  
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(const MyApp());
 }
@@ -24,49 +24,76 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'GoFooD',
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: ColorClass.headLines,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xCDfe210e),
-            foregroundColor: Colors.white,
+            backgroundColor: ColorClass.primary,
+            foregroundColor: ColorClass.headLines,
           ),
         ),
-        appBarTheme: const AppBarThemeData(
-          backgroundColor: Color(0xCDfe210e),
-          foregroundColor: Colors.white,
+        appBarTheme: AppBarThemeData(
+          backgroundColor: ColorClass.primary,
+          foregroundColor: ColorClass.headLines,
           elevation: 0,
         ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Colors.white,
+        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          selectedItemColor: ColorClass.headLines,
           unselectedItemColor: Colors.white70,
-          backgroundColor: Color(0xCDfe210e),
+          backgroundColor: ColorClass.primary,
           type: BottomNavigationBarType.fixed,
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: ColorClass.headLines),
       ),
       debugShowCheckedModeBanner: false,
       home: userState(),
     );
   }
-  
+
   Widget userState() {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
+
       builder: (context, snapshot) {
         // حالة التحميل أثناء التحقق من السيرفر
+
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
+          return Scaffold(
             body: Center(
-              child: CircularProgressIndicator(color: Color(0xCDfe210e)),
+              child: CircularProgressIndicator(color: ColorClass.primary),
             ),
           );
+        } else if (snapshot.hasData) {
+          return FutureBuilder(
+            future: FirebaseFirestore.instance
+                .collection('users')
+                .doc(snapshot.data!.uid)
+                .get(),
+
+            builder: (context, roleSnapshot) {
+              if (roleSnapshot.hasData) {
+                return Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (roleSnapshot.hasData && roleSnapshot.data!.exists) {
+              final data = roleSnapshot.data!.data() as Map<String, dynamic>;
+              final role = data['role'];
+
+         //     final role = roleSnapshot.data!['role'];
+         
+              if (role == 'user') {
+                return NavBar();
+              } else if (role == 'admin') {
+                return AdminScreen();
+              }
+              }
+
+              return Center(child: CircularProgressIndicator(),);
+            },
+          );
         }
-        // إذا وجد مستخدم مسجل دخول، يتم توجيهه للـ NavBar (الذي يحتوي على Scaffold)
-        else if (snapshot.hasData) {
-          return const NavBar(); //
-        }
-        // إذا لم يوجد مستخدم، يتم توجيهه لشاشة تسجيل الدخول
-        return const RegisterLogin();
+
+        return SplashScreen();
       },
     );
   }

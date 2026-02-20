@@ -3,6 +3,8 @@ import 'package:go_food/GoFood/model/meal_model.dart';
 import 'package:go_food/GoFood/screens/cart_screen.dart';
 import 'package:go_food/GoFood/screens/fav_screen.dart';
 import 'package:go_food/GoFood/screens/home_screen.dart';
+import 'package:go_food/GoFood/screens/profile_screen.dart';
+import 'package:go_food/GoFood/styles/color_class.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -21,6 +23,7 @@ class _NavBarState extends State<NavBar> {
     'Home': const Icon(Icons.home),
     'Favorite': const Icon(Icons.favorite),
     'Cart': const Icon(Icons.shopping_cart),
+    'Profile': const Icon(Icons.person)
   };
 
   @override
@@ -28,8 +31,9 @@ class _NavBarState extends State<NavBar> {
     // 3. الحل: تعريف قائمة الشاشات داخل الـ build لتتمكن من الوصول لـ cart
     final List<Widget> screens = [
       HomeScreen(cart: cart),
-      const FavPage(),
+      const FavScreen(),
       CartPage(cart: cart),
+      ProfileScreen()
     ];
 
     bool isLandScape =
@@ -37,7 +41,6 @@ class _NavBarState extends State<NavBar> {
 
     return Scaffold(
       appBar: AppBar(
-        // إزالة الفراغ السفلي في وضع الـ Landscape
         bottom: isLandScape
             ? null
             : const PreferredSize(
@@ -50,12 +53,16 @@ class _NavBarState extends State<NavBar> {
             style: TextStyle(
               fontFamily: 'font2',
               fontSize: 30,
-              fontWeight: FontWeight.bold, // تصحيح من .bold
+              fontWeight: .bold, 
               color: Colors.white,
             ),
           ),
-          subtitle: const Text("Your favorite food"),
-          trailing: const CircleAvatar(backgroundColor: Colors.white),
+          subtitle: const Text("Your favorite food",
+          style: TextStyle(
+            fontWeight: .bold
+          ),
+          ),
+          trailing:  CircleAvatar(backgroundColor: ColorClass.headLines),
         ),
       ),
       // 4. عرض الشاشة بناءً على الاندكس الحالي
@@ -63,7 +70,6 @@ class _NavBarState extends State<NavBar> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
         onTap: (value) {
-          // تحديث الحالة عند الضغط على أيقونة
           setState(() {
             index = value;
           });

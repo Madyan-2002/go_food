@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
-class ColorPage extends StatelessWidget {
+class ColorClass extends StatelessWidget {
   final Color color;
+  static Color primary = Color.fromARGB(255, 250, 86, 86);
+  static Color headLines = Colors.white;
 
-  ColorPage({super.key, required this.color});
+  ColorClass({super.key, required this.color});
 
   @override
   Widget build(BuildContext context) {

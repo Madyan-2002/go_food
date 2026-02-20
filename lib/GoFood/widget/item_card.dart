@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_food/GoFood/model/meal_model.dart';
+import 'package:go_food/GoFood/styles/color_class.dart';
 
 class ItemCard extends StatelessWidget {
   final MealModel mealModel;
@@ -8,7 +9,8 @@ class ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Card(color: ColorClass.headLines,
+    elevation: 15,
       child: Stack(
         children: [
           SizedBox(
