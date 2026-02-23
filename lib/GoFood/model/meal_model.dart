@@ -1,4 +1,5 @@
 class MealModel {
+  final String? id;
   final String img;
   final String name;
   final double price;
@@ -7,6 +8,7 @@ class MealModel {
   final String category;
 
   MealModel({
+     this.id,
     required this.img,
     required this.name,
     required this.price,
@@ -17,6 +19,7 @@ class MealModel {
 
   //copywith method
   MealModel copyWith({
+    String? id,
     String? img,
     String? name,
     double? price,
@@ -25,12 +28,37 @@ class MealModel {
     String? category,
   }) {
     return MealModel(
+      id: id ?? this.id,
       img: img ?? this.img,
       name: name ?? this.name,
       price: price ?? this.price,
       description: description ?? this.description,
       isFav: isFav ?? this.isFav,
       category: category ?? this.category,
+    );
+  }
+
+  //toMap
+  Map<String, dynamic> toMap() {
+    return {
+      'id' :id,
+      'name': name,
+      'category': category,
+      'price': price,
+      'description': description,
+      'img': img,
+    };
+  }
+
+  //fromMap
+  factory MealModel.fromMap(Map<String, dynamic> map ,String docID) {
+    return MealModel(
+      id: map['id'],
+      img: map['img'],
+      name: map['name'],
+      price: (map['price'] as num).toDouble(),
+      description: map['description'],
+      category: map['category'],
     );
   }
 }

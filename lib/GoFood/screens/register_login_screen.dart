@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_food/GoFood/screens/admin_screen.dart';
 import 'package:go_food/GoFood/screens/nav_bar.dart';
-import 'package:go_food/GoFood/screens/profile_screen.dart';
 import 'package:go_food/GoFood/widget/custom_text_field.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -242,7 +242,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
 
         else if (doc['role'] == 'admin'){
            Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            MaterialPageRoute(builder: (context) => const AdminScreen()),
           );
         }
       } else {

@@ -1,6 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_food/GoFood/model/meal_model.dart';
-import 'package:go_food/GoFood/screens/details_screen.dart';
 import 'package:go_food/GoFood/styles/color_class.dart';
 import 'package:go_food/GoFood/widget/category_widget.dart';
 import 'package:go_food/GoFood/widget/item_card.dart';
@@ -33,9 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return searchInCategory && searchByUser;
     }).toList();
 
-    //  selctedItem == 'All'
-    //     ? meals
-    //     : meals.where((meal) => meal.category == selctedItem).toList();
     return Padding(
       padding: const EdgeInsets.all(15),
       child: Column(
@@ -118,34 +116,36 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(height: height * 0.02),
           Expanded(
-            child: GridView.builder(
-              itemCount: filtterList.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: isLandScape ? 3 : 2,
-              ),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailsScreen(
-                          mad: filtterList[index],
-                          cart: widget.cart,
-                        ),
+            child: StreamBuilder(
+              stream: fillterCategory().snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No Products'));
+                }
+                final product = snapshot.data!.docs
+                    .map(
+                      (doc) => MealModel.fromMap(
+                        doc.data() as Map<String, dynamic>,
+                        doc.id,
                       ),
+                    )
+                    .toList();
+
+                return GridView.builder(
+                  itemCount: product.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: isLandScape ? 3 : 2,
+                  ),
+                  itemBuilder: (context, index) {
+                    return ItemCard(
+                      mealModel: product[index],
+                      onTap: () async {
+                        await productFav(product[index]);
+                      },
                     );
                   },
-                  child: ItemCard(
-                    mealModel: filtterList[index],
-                    onTap: () {
-                      setState(() {
-                        meals[index] = filtterList[index].copyWith(
-                          isFav: !filtterList[index].isFav,
-                        );
-                      });
-                    },
-                  ),
                 );
               },
             ),
@@ -154,4 +154,66 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  Query fillterCategory() {
+    if (selctedItem == 'All') {
+      return FirebaseFirestore.instance.collection('products');
+    }
+    return FirebaseFirestore.instance
+        .collection('products')
+        .where('category', isEqualTo: selctedItem);
+  }
+
+  Future<void> productFav(MealModel meal) async {
+    final user = FirebaseAuth.instance.currentUser!;
+    final favRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('products')
+        .doc(meal.id);
+
+    final doc = await favRef.get();
+
+    if (doc.exists) {
+      await favRef.delete();
+    } else {
+      // إذا لم يكن موجوداً، نضيفه
+      await favRef.set(meal.toMap()..['isFav'] = true);
+    }
+  }
 }
+
+
+
+
+            //   child: GridView.builder(
+            //     itemCount: filtterList.length,
+            //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            //       crossAxisCount: isLandScape ? 3 : 2,
+            //     ),
+            //     itemBuilder: (context, index) {
+            //       return InkWell(
+            //         onTap: () {
+            //           Navigator.push(
+            //             context,
+            //             MaterialPageRoute(
+            //               builder: (context) => DetailsScreen(
+            //                 mad: filtterList[index],
+            //                 cart: widget.cart,
+            //               ),
+            //             ),
+            //           );
+            //         },
+            //         child: ItemCard(
+            //           mealModel: filtterList[index],
+            //           onTap: () {
+            //             setState(() {
+            //               meals[index] = filtterList[index].copyWith(
+            //                 isFav: !filtterList[index].isFav,
+            //               );
+            //             });
+            //           },
+            //         ),
+            //       );
+            //     },
+            //   ),

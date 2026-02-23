@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_food/GoFood/model/meal_model.dart';
 import 'package:go_food/GoFood/widget/fav_card.dart';
@@ -14,9 +15,11 @@ class FavScreen extends StatefulWidget {
 class _FavPageState extends State<FavScreen> {
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
     List<MealModel> favMeals = meals
         .where((meal) => meal.isFav == true)
         .toList();
+     
     return favMeals.isEmpty
         ? SizedBox(
             width: double.infinity,

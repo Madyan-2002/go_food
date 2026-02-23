@@ -5,7 +5,7 @@ class CategoryWidget extends StatelessWidget {
   final String text;
   final Color txtColor;
   final void Function()? onTap;
-  CategoryWidget({
+  const CategoryWidget({
     super.key,
     required this.colorBg,
     required this.text,
