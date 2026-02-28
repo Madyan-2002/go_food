@@ -52,7 +52,7 @@ class ItemCard extends StatelessWidget {
               : StreamBuilder(stream:FirebaseFirestore.instance
                         .collection('users')
                         .doc(user.uid)
-                        .collection('products') 
+                        .collection('favorite') 
                         .doc(mealModel.id)
                         .snapshots(),
                          builder: (context , snapShot) {

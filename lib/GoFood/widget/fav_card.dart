@@ -10,37 +10,84 @@ class FavCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: Card(
-        elevation: 30,
-        child: SizedBox(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
           child: LayoutBuilder(
-            builder: (context, constraints) => Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Image.asset(
-                      mealModel.img,
-                      height: constraints.maxWidth * 0.25,
+            builder: (context, constraints) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            mealModel.img,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.fastfood,
+                                size: 50,
+                                color: Colors.grey,
+                              ); 
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 15),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment
+                                .center, 
+                            children: [
+                              Text(
+                                mealModel.name.isNotEmpty
+                                    ? mealModel.name
+                                    : "No Name",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.black, // تأكيد اللون الأسود
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ), // مسافة بسيطة بين العنوان والوصف
+                              const Text(
+                                "Delicious meal description",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: constraints.maxWidth * 0.05),
-                    SizedBox(
-                      width: constraints.maxWidth * 0.30,
-                      child: FittedBox(child: Text(mealModel.name)),
-                    ),
-                  ],
-                ),
-                InkWell(
-                  onTap: onTap,
-                  child: Icon(
-                    Icons.favorite,
-                    color: ColorClass.primary,
-                    size: constraints.maxWidth * 0.10,
                   ),
-                ),
-              ],
-            ),
+                  InkWell(
+                    onTap: onTap,
+                    child: Icon(
+                      Icons.favorite,
+                      color: ColorClass.primary,
+                      size: 28,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

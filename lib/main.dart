@@ -50,51 +50,60 @@ class MyApp extends StatelessWidget {
   }
 
   Widget userState() {
-    return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
+  return StreamBuilder<User?>(
+    stream: FirebaseAuth.instance.authStateChanges(),
+    builder: (context, snapshot) {
 
-      builder: (context, snapshot) {
-        // حالة التحميل أثناء التحقق من السيرفر
+      // أثناء التحقق من تسجيل الدخول
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        );
+      }
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(color: ColorClass.primary),
-            ),
-          );
-        } else if (snapshot.hasData) {
-          return FutureBuilder(
-            future: FirebaseFirestore.instance
-                .collection('users')
-                .doc(snapshot.data!.uid)
-                .get(),
-
-            builder: (context, roleSnapshot) {
-              if (roleSnapshot.hasData) {
-                return Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              }
-              if (roleSnapshot.hasData && roleSnapshot.data!.exists) {
-              final data = roleSnapshot.data!.data() as Map<String, dynamic>;
-              final role = data['role'];
-
-         //     final role = roleSnapshot.data!['role'];
-         
-              if (role == 'user') {
-                return NavBar();
-              } else if (role == 'admin') {
-                return AdminScreen();
-              }
-              }
-
-              return Center(child: CircularProgressIndicator(),);
-            },
-          );
-        }
-
+      // إذا لم يكن هناك مستخدم مسجل دخول
+      if (!snapshot.hasData) {
         return SplashScreen();
-      },
-    );
-  }
+      }
+
+      // إذا كان هناك مستخدم
+      return FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc(snapshot.data!.uid)
+            .get(),
+        builder: (context, AsyncSnapshot<DocumentSnapshot> roleSnapshot) {
+
+          if (roleSnapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (roleSnapshot.hasError) {
+            return Scaffold(
+              body: Center(child: Text("Error loading user data")),
+            );
+          }
+
+          // إذا وُجد document للمستخدم
+          if (roleSnapshot.hasData && roleSnapshot.data!.exists) {
+            final data =
+                roleSnapshot.data!.data() as Map<String, dynamic>;
+            final role = data['role'];
+
+            if (role == 'user') {
+              return NavBar();
+            } else if (role == 'admin') {
+              return AdminScreen();
+            }
+          }
+
+          // إذا لا يوجد document
+          return SplashScreen();
+        },
+      );
+    },
+  );
+}
 }

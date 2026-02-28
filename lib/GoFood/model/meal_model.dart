@@ -41,26 +41,28 @@ class MealModel {
   //toMap
   Map<String, dynamic> toMap() {
     return {
-      'id' :id,
+     // 'id' :id,
       'name': name,
       'category': category,
       'price': price,
       'description': description,
       'img': img,
+      'isFav': isFav
     };
   }
 
   //fromMap
-  factory MealModel.fromMap(Map<String, dynamic> map ,String docID) {
-    return MealModel(
-      id: map['id'],
-      img: map['img'],
-      name: map['name'],
-      price: (map['price'] as num).toDouble(),
-      description: map['description'],
-      category: map['category'],
-    );
-  }
+ factory MealModel.fromMap(Map<String, dynamic> map, String docID) {
+  return MealModel(
+    id: docID, // 👈 استخدم docID بدل map['id']
+    img: map['img'] ?? '',
+    name: map['name'] ?? '',
+    price: (map['price'] as num?)?.toDouble() ?? 0.0,
+    description: map['description'] ?? '',
+    category: map['category'] ?? '',
+    isFav: map['isFav'] ?? false, // 👈 أهم تعديل
+  );
+}
 }
 
 List<MealModel> meals = [
