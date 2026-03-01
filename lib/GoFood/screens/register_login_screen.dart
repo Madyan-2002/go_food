@@ -22,8 +22,7 @@ class _RegisterLoginState extends State<RegisterLogin> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -37,12 +36,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
 
   // هذه الخطوة التي تنشأ لنا ال database
   Future<void> addUser() {
-    CollectionReference users = firestore.collection(
-      'users',
-    ); // هنا يكون ال collection
+    CollectionReference users = firestore.collection('users');
     return users.doc(firebaseAuth.currentUser!.uid).set({
-      // هنا يكون ال document
-      // وهنا ننشأ ال field
       'email': emailController.text,
       'role': 'user',
     });
@@ -238,10 +233,8 @@ class _RegisterLoginState extends State<RegisterLogin> {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const NavBar()),
           );
-        }
-
-        else if (doc['role'] == 'admin'){
-           Navigator.of(context).pushReplacement(
+        } else if (doc['role'] == 'admin') {
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => const AdminScreen()),
           );
         }
